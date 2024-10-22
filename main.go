@@ -21,6 +21,7 @@ func main() {
 		time.Sleep(1 * time.Second)
 	}
 
+	startTime := time.Now()
 	myPoints := 0
 	for myPoints < totalPoints {
 		x, y := rand.Intn(100), rand.Intn(100)
@@ -35,11 +36,17 @@ func main() {
 			fmt.Println("Не правильна відповідь!")
 		} else {
 			if ansInt == x+y {
-				myPoints = totalPoints
-				fmt.Println("УРА!!!")
+				myPoints += pointsPerQuestion
+				fmt.Println("Балів набрано: ", myPoints)
+				fmt.Printf("Залишилось набрати: %v\n", totalPoints-myPoints)
 			} else {
 				fmt.Println("Спробуй ще Т_Т")
 			}
 		}
 	}
+
+	endTime := time.Now()
+	timeSpent := endTime.Sub(startTime)
+	fmt.Println("Вітаю! Ти впорався всього за: ", timeSpent)
+	time.Sleep(5 * time.Second)
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math-game/domain"
 	"math/rand"
 	"strconv"
 	"time"
@@ -9,14 +10,44 @@ import (
 
 const (
 	totalPoints       int = 100
-	pointsPerQuestion int = 20
+	pointsPerQuestion int = 100
 )
 
-func main() {
-	fmt.Println("Вітаємо у грі!")
-	time.Sleep(3 * time.Second)
+var id uint64 = 1
 
-	for i := 5; i >= 1; i-- {
+func main() {
+	var users []domain.User
+	fmt.Println("Вітаємо у грі!")
+
+	for {
+		menu()
+		point := ""
+		fmt.Scan(&point)
+		switch point {
+		case "1":
+			user := play()
+			users = append(users, user)
+		case "2":
+			for _, user := range users {
+				fmt.Printf("Id: %v Name: %s Time: %v\n",
+					user.Id, user.Name, user.TimeSpent)
+			}
+		case "3":
+			return
+		default:
+			fmt.Println("Зробіть коректний вибір")
+		}
+	}
+}
+
+func menu() {
+	fmt.Println("1. Почати гру")
+	fmt.Println("2. Рейтинг")
+	fmt.Println("3. Вийти")
+}
+
+func play() domain.User {
+	for i := 3; i >= 1; i-- {
 		fmt.Printf("Гра почнеться через: %v\n", i)
 		time.Sleep(1 * time.Second)
 	}
@@ -48,5 +79,17 @@ func main() {
 	endTime := time.Now()
 	timeSpent := endTime.Sub(startTime)
 	fmt.Println("Вітаю! Ти впорався всього за: ", timeSpent)
-	time.Sleep(5 * time.Second)
+	fmt.Println("Введіть своє ім'я: ")
+
+	name := ""
+	fmt.Scan(&name)
+
+	user := domain.User{
+		Id:        id,
+		Name:      name,
+		TimeSpent: timeSpent,
+	}
+	id++
+
+	return user
 }

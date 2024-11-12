@@ -19,7 +19,12 @@ const (
 var id uint64 = 1
 
 func main() {
-	var users []domain.User
+	users := getUsers()
+	for _, user := range users {
+		if user.Id >= id {
+			id = user.Id + 1
+		}
+	}
 	fmt.Println("Вітаємо у грі!")
 
 	for {
@@ -29,8 +34,11 @@ func main() {
 		switch point {
 		case "1":
 			user := play()
+			users = getUsers()
 			users = append(users, user)
+			sortAndSave(users)
 		case "2":
+			users = getUsers()
 			for _, user := range users {
 				fmt.Printf("Id: %v Name: %s Time: %v\n",
 					user.Id, user.Name, user.TimeSpent)
@@ -125,7 +133,15 @@ func sortAndSave(users []domain.User) {
 func getUsers() []domain.User {
 	file, err := os.Open("users.json")
 	if err != nil {
-		fmt.Printf("getUsers -> os.Open: %s", err)
+		if os.IsNotExist(err) {
+			_, err = os.Create("users.json")
+			if err != nil {
+				fmt.Printf("getUsers -> os.Create: %s\n", err)
+				return nil
+			}
+			return nil
+		}
+		fmt.Printf("getUsers -> os.Open: %s\n", err)
 		return nil
 	}
 	defer func(file *os.File) {
@@ -139,7 +155,6 @@ func getUsers() []domain.User {
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&users)
 	if err != nil {
-		fmt.Printf("getUsers -> decoder.Decode: %s", err)
 		return nil
 	}
 
